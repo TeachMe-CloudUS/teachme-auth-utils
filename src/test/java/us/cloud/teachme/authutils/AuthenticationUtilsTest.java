@@ -1,10 +1,14 @@
 package us.cloud.teachme.authutils;
 
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
+import java.nio.file.Paths;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class AuthenticationUtilsTest {
 
@@ -43,5 +47,12 @@ class AuthenticationUtilsTest {
     void testNeedsAuthentication(String path, String protectedPaths, boolean expected) {
         boolean authNeeded = AuthenticationUtils.needsAuthentication(path, protectedPaths.split(","));
         assertEquals(expected, authNeeded);
+    }
+
+
+    @Test
+    void testLoadPublicKey() throws Exception {
+        var publicKey = AuthenticationUtils.loadPublicKey(Paths.get("src/test/resources/public-key.pem"));
+        assertNotNull(publicKey, "Public key should be loaded successfully");
     }
 }
