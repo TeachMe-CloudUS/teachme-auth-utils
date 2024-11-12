@@ -3,23 +3,15 @@ package us.cloud.teachme.authutils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 
-import java.security.KeyFactory;
-import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.X509EncodedKeySpec;
-import java.util.Base64;
 import java.util.Date;
 
 public class JwtTokenValidator {
 
     private final PublicKey publicKey;
 
-    public JwtTokenValidator(String publicKeyPem) throws InvalidKeySpecException, NoSuchAlgorithmException {
-        byte[] decoded = Base64.getDecoder().decode(publicKeyPem);
-        X509EncodedKeySpec spec = new X509EncodedKeySpec(decoded);
-        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-        this.publicKey = keyFactory.generatePublic(spec);
+    public JwtTokenValidator(PublicKey publicKeyPem) {
+        this.publicKey = publicKeyPem;
     }
 
     /**
@@ -54,5 +46,9 @@ public class JwtTokenValidator {
      */
     public String getUserRole(Claims claims) {
         return claims.get("role", String.class);
+    }
+
+    public PublicKey getPublicKey() {
+        return publicKey;
     }
 }

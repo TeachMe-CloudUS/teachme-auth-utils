@@ -6,11 +6,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
-
 @Configuration
 public class JwtFilterConfig {
 
@@ -21,17 +16,13 @@ public class JwtFilterConfig {
     private String[] protectedPaths;
 
     @Bean
-    public JwtTokenValidator jwtTokenValidator() throws InvalidKeySpecException, NoSuchAlgorithmException, IOException {
-        byte[] keyBytes = Files.readAllBytes(publicKeyResource.getFile().toPath());
-        String publicKeyPem = new String(keyBytes)
-                .replace("-----BEGIN PUBLIC KEY-----", "")
-                .replace("-----END PUBLIC KEY-----", "")
-                .replaceAll("\\s", "");
-        return new JwtTokenValidator(publicKeyPem);
+    public JwtTokenValidator jwtTokenValidator() throws Exception {
+        var publicKey = AuthenticationUtils.loadPublicKey(publicKeyResource.getFile().toPath());
+        return new JwtTokenValidator(publicKey);
     }
 
     @Bean
-    public FilterRegistrationBean<JwtAuthenticationFilter> jwtFilter() throws InvalidKeySpecException, NoSuchAlgorithmException, IOException {
+    public FilterRegistrationBean<JwtAuthenticationFilter> jwtFilter() throws Exception {
         JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtTokenValidator(), protectedPaths);
         FilterRegistrationBean<JwtAuthenticationFilter> registrationBean = new FilterRegistrationBean<>();
         registrationBean.setFilter(filter);
