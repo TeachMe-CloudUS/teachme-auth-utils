@@ -1,14 +1,14 @@
 package us.cloud.teachme.authutils;
 
 import io.jsonwebtoken.Claims;
-import org.springframework.http.HttpHeaders;
-import org.springframework.lang.NonNull;
-import org.springframework.web.filter.OncePerRequestFilter;
-
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpHeaders;
+import org.springframework.lang.NonNull;
+import org.springframework.web.filter.OncePerRequestFilter;
+
 import java.io.IOException;
 
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -33,20 +33,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        // Check if Authorization header provided
-        String header = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (header == null || !header.startsWith("Bearer ")) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("Missing or invalid Authorization header");
+        String token = extractToken(request, response);
+        if (token == null) {
             return;
         }
 
-        String token = header.substring(7);
         try {
-            Claims claims = jwtTokenValidator.validateToken(token);
-            if (jwtTokenValidator.isTokenExpired(claims)) {
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.getWriter().write("Token expired");
+            Claims claims = validateAndParseToken(token, response);
+            if (claims == null) {
                 return;
             }
 
@@ -55,8 +49,35 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             filterChain.doFilter(request, response);
         } catch (Exception e) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("Invalid or expired token");
+            setUnauthorizedResponse(response, "Invalid or expired token");
         }
+    }
+
+    private Claims validateAndParseToken(String token, HttpServletResponse response) throws IOException {
+        try {
+            Claims claims = jwtTokenValidator.validateToken(token);
+            if (jwtTokenValidator.isTokenExpired(claims)) {
+                setUnauthorizedResponse(response, "Token expired");
+                return null;
+            }
+            return claims;
+        } catch (Exception e) {
+            setUnauthorizedResponse(response, "Invalid or expired token");
+            return null;
+        }
+    }
+
+    private String extractToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String header = request.getHeader(HttpHeaders.AUTHORIZATION);
+        if (header == null || !header.startsWith("Bearer ")) {
+            setUnauthorizedResponse(response, "Missing or invalid Authorization header");
+            return null;
+        }
+        return header.substring(7);
+    }
+
+    private void setUnauthorizedResponse(HttpServletResponse response, String message) throws IOException {
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.getWriter().write(message);
     }
 }
