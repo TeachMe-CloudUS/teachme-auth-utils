@@ -25,21 +25,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain)
             throws ServletException, IOException {
 
-        String requestUri = request.getRequestURI();
-        boolean needsAuthentication = false;
-        for (String path : protectedPaths) {
-            if (requestUri.startsWith(path)) {
-                needsAuthentication = true;
-                break;
-            }
-        }
+        String currentPath = request.getRequestURI();
+        boolean needsAuthentication = AuthenticationUtils.needsAuthentication(currentPath, protectedPaths);
 
         if (!needsAuthentication) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        // Validate JWT if the request is to a protected path
+        // Check if Authorization header provided
         String header = request.getHeader(HttpHeaders.AUTHORIZATION);
         if (header == null || !header.startsWith("Bearer ")) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
