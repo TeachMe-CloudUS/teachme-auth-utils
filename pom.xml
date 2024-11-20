@@ -1,16 +1,15 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>us.cloud.teachme</groupId>
-    <artifactId>auth-utils</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-    <name>auth-utils</name>
-    <description>Authentication utilities for validating jwt.</description>
+    <artifactId>teachme-auth-utils</artifactId>
+    <version>0.0.2-SNAPSHOT</version>
+    <name>teachme-auth-utils</name>
+    <description>Authentication utilities for validating JWT.</description>
 
     <url>https://github.com/TeachMe-CloudUS/teachme-auth-utils</url>
     <scm>
-        <url>s://github.com/TeachMe-CloudUS/teachme-auth-utils</url>
+        <url>https://github.com/TeachMe-CloudUS/teachme-auth-utils</url>
         <connection>scm:git:https://github.com/TeachMe-CloudUS/teachme-auth-utils.git</connection>
         <developerConnection>scm:git:ssh://git@github.com:TeachMe-CloudUS/teachme-auth-utils.git</developerConnection>
         <tag>HEAD</tag>
@@ -22,70 +21,82 @@
         </license>
     </licenses>
 
-    <distributionManagement>
-        <repository>
-            <id>github</id>
-            <url>https://maven.pkg.github.com/TeachMe-CloudUS/teachme-auth-utils</url>
-        </repository>
-    </distributionManagement>
-
     <properties>
         <java.version>17</java.version>
         <spring-boot.version>3.3.5</spring-boot.version>
     </properties>
 
+    <dependencyManagement>
+        <dependencies>
+            <!-- Use Spring Boot BOM to manage versions -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <dependencies>
+        <!-- Core Spring Boot Dependencies -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
-            <version>${spring-boot.version}</version>
-            <scope>provided</scope>
         </dependency>
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-            <version>${spring-boot.version}</version>
-            <scope>provided</scope>
         </dependency>
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
-            <version>${spring-boot.version}</version>
-            <scope>provided</scope>
         </dependency>
 
+        <!-- JSON Web Token -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-api</artifactId>
-            <version>0.11.2</version>
+            <version>0.11.5</version>
         </dependency>
-
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-impl</artifactId>
-            <version>0.11.2</version>
+            <version>0.11.5</version>
+            <scope>runtime</scope>
         </dependency>
-
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-jackson</artifactId>
-            <version>0.11.2</version>
+            <version>0.11.5</version>
+            <scope>runtime</scope>
         </dependency>
 
+        <!-- Testing Dependencies -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>5.11.3</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
+
     <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.10.1</version>
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>

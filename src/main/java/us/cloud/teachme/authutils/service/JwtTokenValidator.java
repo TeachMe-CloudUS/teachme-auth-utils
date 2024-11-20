@@ -1,4 +1,4 @@
-package us.cloud.teachme.authutils;
+package us.cloud.teachme.authutils.service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

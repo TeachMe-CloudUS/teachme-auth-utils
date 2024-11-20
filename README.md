@@ -21,8 +21,8 @@ Add the library as a dependency in your project’s `pom.xml`:
 ```xml
 <dependency>
     <groupId>us.cloud.teachme</groupId>
-    <artifactId>auth-utils</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <artifactId>teachme-auth-utils</artifactId>
+    <version>0.0.2-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -45,10 +45,10 @@ package us.cloud.teachme.yourservice;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import us.cloud.teachme.authutils.JwtFilterConfig;
+import us.cloud.teachme.authutils.config.AuthSecurityConfiguration;
 
 @Configuration
-@Import(JwtFilterConfig.class)
+@Import(AuthSecurityConfiguration.class)
 public class SecurityConfig {
 
 }

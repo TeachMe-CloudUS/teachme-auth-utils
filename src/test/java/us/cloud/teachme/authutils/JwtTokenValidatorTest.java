@@ -6,6 +6,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import us.cloud.teachme.authutils.service.JwtTokenValidator;
 
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
