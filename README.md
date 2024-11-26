@@ -26,7 +26,33 @@ Add the library as a dependency in your project’s `pom.xml`:
 </dependency>
 ```
 
+Then, add the repository where the library is hosted in your `pom.xml`:
+
+```xml
+<repositories>
+    <repository>
+        <id>github</id>
+        <url>https://maven.pkg.github.com/TeachMe-CloudUS/teachme-auth-utils</url>
+    </repository>
+</repositories>
+```
+
+Finally, add your GitHub username and a personal access token to your `~/.m2/settings.xml` file:
+
+```xml
+<settings>
+    <servers>
+        <server>
+            <id>github</id>
+            <username>{GITHUB_USERNAME}</username>
+            <password>{GITHUB_TOKEN}</password>
+        </server>
+    </servers>
+</settings>
+```
+
 ### Configuration
+
 To use the library, configure the following properties in `application.properties`:
 
 ```properties
@@ -38,6 +64,7 @@ jwt.protected-paths=/api/protected/*
 ```
 
 ### Usage
+
 To register `JwtAuthenticationFilter`, import `JwtFilterConfig` in your Spring configuration:
 
 ```java
