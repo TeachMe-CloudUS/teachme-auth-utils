@@ -1,45 +1,43 @@
 package us.cloud.teachme.authutils;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.util.Date;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 import us.cloud.teachme.authutils.service.JwtTokenValidator;
-
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.util.Date;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class JwtTokenValidatorTest {
 
     private JwtTokenValidator jwtTokenValidator;
     private String token;
-    private PrivateKey privateKey;
+    private String secretKey;
 
     @BeforeEach
     void setUp() throws Exception {
         // Generate a key pair for testing
-        KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance("RSA");
-        keyPairGen.initialize(2048);
-        KeyPair keyPair = keyPairGen.generateKeyPair();
+        secretKey = "m56cYXCl2TxvV1/fwxLGziK5kVGT+kyOgMz7cIUdCjYuydbtvYXsLCIb2M4REzROggLh1zjEHKCu";
 
-        privateKey = keyPair.getPrivate();
-        PublicKey publicKey = keyPair.getPublic();
-
-        jwtTokenValidator = new JwtTokenValidator(publicKey);
+        jwtTokenValidator = new JwtTokenValidator(secretKey);
+        long actualTime = System.currentTimeMillis();
 
         token = Jwts.builder()
-                .setSubject("testUser")
+                .subject("testUser")
                 .claim("role", "ROLE_USER")
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 10)) // 10 minutes expiration
-                .signWith(privateKey, SignatureAlgorithm.RS256)
+                .issuedAt(new Date(actualTime))
+                .expiration(new Date(actualTime + 1000 * 60 * 10)) // 10 minutes expiration
+                .signWith(Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey)))
                 .compact();
+
     }
 
     @Test
@@ -53,12 +51,14 @@ class JwtTokenValidatorTest {
     void testIsTokenExpired() {
         Claims claims = jwtTokenValidator.validateToken(token);
         assertFalse(jwtTokenValidator.isTokenExpired(claims));
+        long actualTime = System.currentTimeMillis();
 
         String expiredToken = Jwts.builder()
-                .setSubject("testUser")
+                .subject("testUser")
                 // Already expired datetime
-                .setExpiration(new Date(System.currentTimeMillis() - 1000))
-                .signWith(privateKey, SignatureAlgorithm.RS256)
+                .issuedAt(new Date(actualTime))
+                .expiration(new Date(actualTime - 1000))
+                .signWith(Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey)))
                 .compact();
 
         assertThrows(ExpiredJwtException.class, () -> jwtTokenValidator.validateToken(expiredToken));

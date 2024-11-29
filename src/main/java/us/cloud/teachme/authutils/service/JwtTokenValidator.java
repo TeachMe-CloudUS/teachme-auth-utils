@@ -1,17 +1,20 @@
 package us.cloud.teachme.authutils.service;
 
+import java.util.Date;
+
+import javax.crypto.SecretKey;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-
-import java.security.PublicKey;
-import java.util.Date;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 
 public class JwtTokenValidator {
 
-    private final PublicKey publicKey;
+    private final String secretKey;
 
-    public JwtTokenValidator(PublicKey publicKeyPem) {
-        this.publicKey = publicKeyPem;
+    public JwtTokenValidator(String secretKey) {
+        this.secretKey = secretKey;
     }
 
     /**
@@ -19,11 +22,7 @@ public class JwtTokenValidator {
      * Throws JwtException if the token is invalid or expired.
      */
     public Claims validateToken(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(publicKey)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+        return Jwts.parser().verifyWith(getSignKey()).build().parseSignedClaims(token).getPayload();
     }
 
     /**
@@ -48,7 +47,9 @@ public class JwtTokenValidator {
         return claims.get("role", String.class);
     }
 
-    public PublicKey getPublicKey() {
-        return publicKey;
+
+    private SecretKey getSignKey() {
+        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
     }
+
 }
