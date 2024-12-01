@@ -12,7 +12,7 @@ import us.cloud.teachme.authutils.service.JwtTokenValidator;
 @EnableConfigurationProperties(JwtProperties.class)
 public class JwtConfiguration {
 
-    @Value("${jwt.secret-key}")
+    @Value("${security.jwt.secret-key}")
     private String secretKey;
 
     @Bean

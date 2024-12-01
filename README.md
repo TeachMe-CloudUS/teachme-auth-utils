@@ -57,15 +57,18 @@ To use the library, configure the following properties in `application.propertie
 
 ```properties
 # Path to the RSA public key used for JWT verification
-jwt.public-key.path=classpath:public-key.pem
+security.jwt.secret-key=SECRET_KEY
 
 # Paths that require authentication
-jwt.protected-paths=/api/protected/*
+security.jwt.protected-paths=/api/protected/*
+
+# Paths that don't require authentication
+security.jwt.white-listed-paths=/api/public/*
 ```
 
 ### Usage
 
-To register `JwtAuthenticationFilter`, import `JwtFilterConfig` in your Spring configuration:
+To register `AuthSecurityConfiguration`, import `JwtFilterConfig` in your Spring configuration:
 
 ```java
 package us.cloud.teachme.yourservice;
