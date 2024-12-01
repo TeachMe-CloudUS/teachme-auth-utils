@@ -1,10 +1,8 @@
 package us.cloud.teachme.authutils.config;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
 import us.cloud.teachme.authutils.exception.JwtAuthenticationEntryPoint;
 import us.cloud.teachme.authutils.service.JwtTokenValidator;
 
@@ -12,13 +10,16 @@ import us.cloud.teachme.authutils.service.JwtTokenValidator;
 @EnableConfigurationProperties(JwtProperties.class)
 public class JwtConfiguration {
 
-    @Value("${security.jwt.secret-key}")
-    private String secretKey;
+    private final JwtProperties properties;
+
+    public JwtConfiguration(JwtProperties properties) {
+        this.properties = properties;
+    }
 
     @Bean
     public JwtTokenValidator jwtTokenValidator() {
         try {
-            return new JwtTokenValidator(secretKey);
+            return new JwtTokenValidator(properties.secretKey());
         } catch (Exception e) {
             throw new IllegalStateException("Failed to initialize JWT validator: " + e.getMessage(), e);
         }
