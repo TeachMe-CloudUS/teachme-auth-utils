@@ -22,7 +22,7 @@ Add the library as a dependency in your project’s `pom.xml`:
 <dependency>
     <groupId>us.cloud.teachme</groupId>
     <artifactId>teachme-auth-utils</artifactId>
-    <version>0.0.2-SNAPSHOT</version>
+    <version>0.0.3-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -56,7 +56,7 @@ Finally, add your GitHub username and a personal access token to your `~/.m2/set
 To use the library, configure the following properties in `application.properties`:
 
 ```properties
-# Path to the RSA public key used for JWT verification
+# Secret key for Jwt validation
 security.jwt.secret-key=SECRET_KEY
 
 # Paths that require authentication
@@ -68,7 +68,7 @@ security.jwt.white-listed-paths=/api/public/*
 
 ### Usage
 
-To register `AuthSecurityConfiguration`, import `JwtFilterConfig` in your Spring configuration:
+To register `AuthSecurityConfiguration`, import `AuthSecurityConfiguration` in your Spring configuration:
 
 ```java
 package us.cloud.teachme.yourservice;
